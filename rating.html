@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<titl>Movie Rating App</titl>
+  <style>
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .remove-btn {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rate Your Favorite Movies</h1>
+  <form id="movie-form">
+    <label for="title">Title:</label>
+    <input type="text" id="title" required minlength="2">
+    <label for="rating">Rating:</label>
+    <input type="number" id="rating" min="0" max="10" required>
+    <button type="submit">Submit</button>
+  </form>
+  <h2>Movies:</h2>
+  <div id="movies-container">
+    <ul id="movies-list"></ul>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Event handler for form submission
+      $('#movie-form').submit(function(event) {
+        event.preventDefault(); // Prevent form from submitting and page reloading
+
+        // Get input values
+        let title = $('#title').val();
+        let rating = $('#rating').val();
+
+        // Check input validity
+        if (title.length < 2) {
+          alert('Title must have at least 2 characters.');
+          return;
+        }
+
+        if (rating < 0 || rating > 10) {
+          alert('Rating must be between 0 and 10.');
+          return;
+        }
+
+        // Create new movie item
+        let movieItem = $('<li>').text(title + ' - ' + rating);
+
+        // Create remove button
+        let removeButton = $('<button>')
+          .addClass('remove-btn')
+          .text('Remove')
+          .click(function() {
+            $(this).parent().remove();
+          });
+
+        // Append remove button to movie item
+        movieItem.append(removeButton);
+
+        // Append movie item to movies list
+        $('#movies-list').append(movieItem);
+
+        // Reset form inputs
+        $('#title').val('');
+        $('#rating').val('');
+      });
+
+      // Sort by title event handler
+      $('#sort-title').click(function() {
+        let moviesList = $('#movies-list');
+        let movies = moviesList.children('li').get();
+
+        movies.sort(function(a, b) {
+          let titleA = $(a).text().toUpperCase();
+          let titleB = $(b).text().toUpperCase();
+          return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+        });
+
+        moviesList.empty();
+        $.each(movies, function(index, movie) {
+          moviesList.append(movie);
+        });
+      });
+
+      // Sort by rating event handler
+      $('#sort-rating').click(function() {
+        let moviesList = $('#movies-list');
+        let movies = moviesList.children('li').get();
+
+        movies.sort(function(a, b) {
+          let ratingA = parseInt($(a).text().split('-')[1].trim());
+          let ratingB = parseInt($(b).text().split('-')[1].trim());
+          return ratingA - ratingB;
+        });
+
+        moviesList.empty();
+        $.each(movies, function(index, movie) {
+          moviesList.append(movie);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
